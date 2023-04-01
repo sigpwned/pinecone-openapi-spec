@@ -5,7 +5,7 @@ info:
   contact:
     name: Andy Boothe
     url: https://github.com/sigpwned/pinecone-java-client
-  version: 20230331.1
+  version: 20230331.2
 servers:
   - url: https://controller.{environment}.pinecone.io  
     variables:
@@ -18,8 +18,8 @@ servers:
           - eu-west1-gcp
           - us-east1-aws
 externalDocs:
-  - url: https://docs.pinecone.io/
-    description: The official Pinecone API documentation
+  url: https://docs.pinecone.io/
+  description: The official Pinecone API documentation
 tags:
   - name: Index Operations
     description: Endpoints for manipulating indexes
