@@ -5,7 +5,7 @@ info:
   contact:
     name: Andy Boothe
     url: https://github.com/sigpwned/pinecone-openapi-spec
-  version: "20230401.0"
+  version: "20230401.1"
 servers:
   - url: https://controller.{environment}.pinecone.io  
     variables:
@@ -490,6 +490,13 @@ components:
       name: Api-Key
 
   schemas:
+    Environment:
+      type: string
+      enum:
+        - us-west1-gcp
+        - us-east1-gcp
+        - eu-west1-gcp
+        - us-east1-aws
     CollectionName:
       description: The unique name of a collection.
       type: string
