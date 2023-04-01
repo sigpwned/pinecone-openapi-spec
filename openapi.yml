@@ -1,11 +1,11 @@
 openapi: 3.0.2
 info:
   title: Pinecone API
-  description: Pinecone is a vector database. This is an unofficial, reverse-engineered, community-managed OpenAPI spec that (should) accurately model the Pinecone API. This project was developed independent of and is unaffiliated with Pinecone Systems. Users should switch to the official API spec, if and when Pinecone releases it.
+  description: Pinecone is a vector database. This is an unofficial, community-managed OpenAPI spec that (should) accurately model the Pinecone API. This project was developed independent of and is unaffiliated with Pinecone Systems. Users should switch to the official API spec, if and when Pinecone releases it.
   contact:
     name: Andy Boothe
-    url: https://github.com/sigpwned/pinecone-openapi-spec
-  version: 20230331.0
+    url: https://github.com/sigpwned/pinecone-java-client
+  version: 20230331.1
 servers:
   - url: https://controller.{environment}.pinecone.io  
     variables:
@@ -17,6 +17,9 @@ servers:
           - us-east1-gcp
           - eu-west1-gcp
           - us-east1-aws
+externalDocs:
+  - url: https://docs.pinecone.io/
+    description: The official Pinecone API documentation
 tags:
   - name: Index Operations
     description: Endpoints for manipulating indexes
@@ -480,25 +483,12 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorMessage'
 
-  parameters:
-    secretId:
-      name: secretId
-      in: path
-      description: The ID of the secret to manipulate
-      required: true
-      schema:
-        type: string
-        format: SecretId
-    limit:
-      name: limit
-      in: query
-      description: The maximum number of items to return per page
-      required: false
-      schema:
-        type: integer
-        format: int32
-        default: 10
-    
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: Api-Key
+
   schemas:
     CollectionName:
       description: The unique name of a collection.
@@ -975,3 +965,6 @@ components:
   
     ErrorMessage:
       type: string
+      
+security:
+  - ApiKey: []
