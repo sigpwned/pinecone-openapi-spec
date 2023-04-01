@@ -4,8 +4,8 @@ info:
   description: Pinecone is a vector database. This is an unofficial, community-managed OpenAPI spec that (should) accurately model the Pinecone API. This project was developed independent of and is unaffiliated with Pinecone Systems. Users should switch to the official API spec, if and when Pinecone releases it.
   contact:
     name: Andy Boothe
-    url: https://github.com/sigpwned/pinecone-java-client
-  version: 20230331.2
+    url: https://github.com/sigpwned/pinecone-openapi-spec
+  version: "20230401.0"
 servers:
   - url: https://controller.{environment}.pinecone.io  
     variables:
@@ -581,24 +581,6 @@ components:
         - cosine
         - dotproduct
         
-    IndexType:
-      type: string
-      description: The type of vector index. Pinecone supports 'approximated'. Deprecated.
-      enum:
-        - approximate
-      
-    ApproximateIndexConfig:
-      type: object
-      description: Deprecated. Use default values.
-      properties:
-        k_bits:
-          type: integer
-          format: int32
-          default: 512
-        hybrid:
-          type: boolean
-          default: false
-        
     IndexName:
       description: The unique name of an index.
       type: string
@@ -655,10 +637,6 @@ components:
           $ref: '#/components/schemas/IndexMetadataConfig'
         source_collection:
           $ref: '#/components/schemas/CollectionName'
-        index_type:
-          $ref: '#/components/schemas/IndexType'
-        index_config:
-          $ref: '#/components/schemas/ApproximateIndexConfig'
           
     IndexConfiguration:
       type: object
