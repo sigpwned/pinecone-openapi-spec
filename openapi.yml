@@ -5,7 +5,7 @@ info:
   contact:
     name: Andy Boothe
     url: https://github.com/sigpwned/pinecone-openapi-spec
-  version: "20230404.0"
+  version: "20230404.1"
 servers:
   - url: https://controller.{environment}.pinecone.io  
     variables:
@@ -55,11 +55,6 @@ paths:
       responses:
         201:
           description: The collection has been successfully created.
-          content:
-            text/plain:
-              example: Created
-              schema:
-                type: string
         400:
           $ref: '#/components/responses/BadRequest'
         409:
@@ -104,11 +99,6 @@ paths:
       responses:
         202:
           description: The collection has been successfully deleted.
-          content:
-            text/plain:
-              example: Accepted
-              schema:
-                type: string
         404:
           $ref: '#/components/responses/CollectionNotFound'
         500:
@@ -143,11 +133,6 @@ paths:
       responses:
         201:
           description: The collection has been successfully created.
-          content:
-            text/plain:
-              example: Created
-              schema:
-                type: string
         400:
           $ref: '#/components/responses/BadRequest'
         409:
@@ -192,11 +177,6 @@ paths:
       responses:
         202:
           description: The index has been successfully deleted.
-          content:
-            text/plain:
-              example: Accepted
-              schema:
-                type: string
         404:
           $ref: '#/components/responses/IndexNotFound'
         500:
@@ -216,11 +196,6 @@ paths:
       responses:
         201:
           description: The index has been successfully updated.
-          content:
-            text/plain:
-              example: Accepted
-              schema:
-                type: string
         400:
           $ref: '#/components/responses/BadRequest'
         404:
