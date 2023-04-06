@@ -5,7 +5,7 @@ info:
   contact:
     name: Andy Boothe
     url: https://github.com/sigpwned/pinecone-openapi-spec
-  version: "20230404.1"
+  version: "20230406.0"
 servers:
   - url: https://controller.{environment}.pinecone.io  
     variables:
@@ -14,7 +14,10 @@ servers:
         description: The regional deployment to use. Must match API key.
         enum:
           - us-west1-gcp
+          - us-west4-gcp
+          - us-central1-gcp
           - us-east1-gcp
+          - us-east4-gcp
           - eu-west1-gcp
           - us-east1-aws
 externalDocs:
