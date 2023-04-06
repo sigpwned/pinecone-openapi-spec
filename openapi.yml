@@ -5,7 +5,7 @@ info:
   contact:
     name: Andy Boothe
     url: https://github.com/sigpwned/pinecone-openapi-spec
-  version: "20230406.0"
+  version: "20230406.1"
 servers:
   - url: https://controller.{environment}.pinecone.io  
     variables:
@@ -221,9 +221,12 @@ paths:
             default: us-east1-gcp
             enum:
               - us-west1-gcp
+              - us-west4-gcp
+              - us-central1-gcp
               - us-east1-gcp
+              - us-east4-gcp
               - eu-west1-gcp
-              - us-east1-aws            
+              - us-east1-aws
     post:
       tags:
         - Vector Operations
@@ -259,9 +262,12 @@ paths:
             default: us-east1-gcp
             enum:
               - us-west1-gcp
+              - us-west4-gcp
+              - us-central1-gcp
               - us-east1-gcp
+              - us-east4-gcp
               - eu-west1-gcp
-              - us-east1-aws            
+              - us-east1-aws
     post:
       tags:
         - Vector Operations
@@ -297,9 +303,12 @@ paths:
             default: us-east1-gcp
             enum:
               - us-west1-gcp
+              - us-west4-gcp
+              - us-central1-gcp
               - us-east1-gcp
+              - us-east4-gcp
               - eu-west1-gcp
-              - us-east1-aws            
+              - us-east1-aws
     post:
       tags:
         - Vector Operations
@@ -335,9 +344,12 @@ paths:
             default: us-east1-gcp
             enum:
               - us-west1-gcp
+              - us-west4-gcp
+              - us-central1-gcp
               - us-east1-gcp
+              - us-east4-gcp
               - eu-west1-gcp
-              - us-east1-aws            
+              - us-east1-aws
     post:
       tags:
         - Vector Operations
@@ -373,9 +385,12 @@ paths:
             default: us-east1-gcp
             enum:
               - us-west1-gcp
+              - us-west4-gcp
+              - us-central1-gcp
               - us-east1-gcp
+              - us-east4-gcp
               - eu-west1-gcp
-              - us-east1-aws            
+              - us-east1-aws
     post:
       tags:
         - Vector Operations
@@ -411,9 +426,12 @@ paths:
             default: us-east1-gcp
             enum:
               - us-west1-gcp
+              - us-west4-gcp
+              - us-central1-gcp
               - us-east1-gcp
+              - us-east4-gcp
               - eu-west1-gcp
-              - us-east1-aws            
+              - us-east1-aws
     post:
       tags:
         - Vector Operations
@@ -472,9 +490,13 @@ components:
       type: string
       enum:
         - us-west1-gcp
+        - us-west4-gcp
+        - us-central1-gcp
         - us-east1-gcp
+        - us-east4-gcp
         - eu-west1-gcp
         - us-east1-aws
+              
     CollectionName:
       description: The unique name of a collection.
       type: string
