@@ -1,0 +1,966 @@
+_id: 6310ed1732307d1081c78a96
+components:
+  schemas:
+    ApproximatedConfig:
+      properties:
+        hybrid:
+          default: false
+          type: boolean
+        k_bits:
+          default: 512
+          type: integer
+      type: object
+    DeleteRequest:
+      description: The request for the `Delete` operation.
+      properties:
+        deleteAll:
+          default: 'false'
+          description: This indicates that all vectors in the index namespace should
+            be deleted.
+          example: false
+          type: boolean
+        filter:
+          description: 'If specified, the metadata filter here will be used to select
+            the vectors to delete. This is mutually exclusive
+
+            with specifying ids to delete in the ids param or using delete_all=True.
+
+            See https://www.pinecone.io/docs/metadata-filtering/.'
+          type: object
+        ids:
+          description: Vectors to delete.
+          example:
+          - id-0
+          - id-1
+          items:
+            type: string
+          maxLength: 1000
+          minLength: 1
+          type: array
+        namespace:
+          description: The namespace to delete vectors from, if applicable.
+          example: example-namespace
+          type: string
+      type: object
+    DeleteResponse:
+      description: The response for the `Delete` operation.
+      type: object
+    DescribeIndexStatsRequest:
+      description: The request for the `DescribeIndexStats` operation.
+      properties:
+        filter:
+          description: 'If this parameter is present, the operation only returns statistics
+
+            for vectors that satisfy the filter.
+
+            See https://www.pinecone.io/docs/metadata-filtering/.'
+          type: object
+      type: object
+    DescribeIndexStatsResponse:
+      description: The response for the `DescribeIndexStats` operation.
+      example:
+        dimension: 1024
+        index_fullness: 0.4
+        namespaces:
+          ? ''
+          : vectorCount: 50000
+          example-namespace-2:
+            vectorCount: 30000
+      properties:
+        dimension:
+          description: The dimension of the indexed vectors.
+          example: 1024
+          format: int64
+          type: integer
+        indexFullness:
+          description: The fullness of the index, regardless of whether a metadata
+            filter expression was passed. The granularity of this metric is 10%.
+          example: 0.4
+          format: float
+          type: number
+        namespaces:
+          additionalProperties:
+            $ref: '#/components/schemas/NamespaceSummary'
+          description: 'A mapping for each namespace in the index from the namespace
+            name to a
+
+            summary of its contents. If a metadata filter expression is present, the
+
+            summary will reflect only vectors matching that expression.'
+          type: object
+        totalVectorCount:
+          example: 80000
+          format: int64
+          title: The total number of vectors in the index, regardless of whether a
+            metadata filter expression was passed
+          type: integer
+      type: object
+    FetchResponse:
+      description: The response for the `Fetch` operation.
+      properties:
+        namespace:
+          description: The namespace of the vectors.
+          example: example-namespace
+          type: string
+        vectors:
+          additionalProperties:
+            $ref: '#/components/schemas/Vector'
+          title: The fetched vectors, in the form of a map between the fetched ids
+            and the fetched vectors
+          type: object
+      type: object
+    HnswConfig:
+      properties:
+        M:
+          default: 12
+          type: integer
+        ef:
+          default: 250
+          type: integer
+        ef_construction:
+          default: 500
+          type: integer
+        max_elements:
+          default: 50000000
+          type: integer
+      type: object
+    NamespaceSummary:
+      description: A summary of the contents of a namespace.
+      properties:
+        vectorCount:
+          description: 'The number of vectors stored in this namespace. Note that
+            updates to this field may lag behind updates to the
+
+            underlying index and corresponding query results, etc.'
+          example: 50000
+          format: int64
+          type: integer
+      type: object
+    QueryRequest:
+      description: The request for the `Query` operation.
+      properties:
+        filter:
+          description: The filter to apply. You can use vector metadata to limit your
+            search. See https://www.pinecone.io/docs/metadata-filtering/.
+          example:
+            genre:
+              $in:
+              - comedy
+              - documentary
+              - drama
+            year:
+              $eq: 2019
+          type: object
+        id:
+          description: The unique ID of the vector to be used as a query vector. Each
+            `query()` request can contain only one of the parameters `queries`, `vector`,
+            or  `id`.
+          example: example-vector-1
+          maxLength: 512
+          type: string
+        includeMetadata:
+          default: 'false'
+          description: Indicates whether metadata is included in the response as well
+            as the ids.
+          example: true
+          type: boolean
+        includeValues:
+          default: 'false'
+          description: Indicates whether vector values are included in the response.
+          example: true
+          type: boolean
+        namespace:
+          description: The namespace to query.
+          example: example-namespace
+          type: string
+        queries:
+          deprecated: true
+          description: DEPRECATED. The query vectors. Each `query()` request can contain
+            only one of the parameters `queries`, `vector`, or  `id`.
+          items:
+            $ref: '#/components/schemas/QueryVector'
+          maxLength: 10
+          minLength: 1
+          type: array
+        sparseVector:
+          $ref: '#/components/schemas/SparseValues'
+        topK:
+          description: The number of results to return for each query.
+          example: 10
+          format: int64
+          maximum: 10000
+          minimum: 1
+          required:
+          - top_k
+          type: integer
+        vector:
+          description: The query vector. This should be the same length as the dimension
+            of the index being queried. Each `query()` request can contain only one
+            of the parameters `id` or `vector`.
+          example:
+          - 0.1
+          - 0.2
+          - 0.3
+          - 0.4
+          - 0.5
+          - 0.6
+          - 0.7
+          - 0.8
+          items:
+            format: float
+            type: number
+          maxLength: 20000
+          minLength: 1
+          type: array
+      required:
+      - topK
+      type: object
+    QueryResponse:
+      description: The response for the `Query` operation. These are the matches found
+        for a particular query vector. The matches are ordered from most similar to
+        least similar.
+      properties:
+        matches:
+          description: The matches for the vectors.
+          items:
+            $ref: '#/components/schemas/ScoredVector'
+          type: array
+        namespace:
+          description: The namespace for the vectors.
+          type: string
+      type: object
+    QueryVector:
+      deprecated: true
+      description: A single query vector within a `QueryRequest`.
+      properties:
+        filter:
+          description: An override for the metadata filter to apply. This replaces
+            the request-level filter.
+          example:
+            genre:
+              $in:
+              - comedy
+              - documentary
+              - drama
+            year:
+              $eq: 2019
+          type: object
+        namespace:
+          description: An override the namespace to search.
+          example: example-namespace
+          type: string
+        sparseValues:
+          $ref: '#/components/schemas/SparseValues'
+        topK:
+          description: An override for the number of results to return for this query
+            vector.
+          example: 10
+          format: int64
+          maximum: 10000
+          minimum: 1
+          type: integer
+        values:
+          description: The query vector values. This should be the same length as
+            the dimension of the index being queried.
+          example:
+          - 0.1
+          - 0.2
+          - 0.3
+          - 0.4
+          - 0.5
+          - 0.6
+          - 0.7
+          - 0.8
+          items:
+            format: float
+            type: number
+          maxLength: 20000
+          minLength: 1
+          required:
+          - values
+          type: array
+      required:
+      - values
+      type: object
+    ScoredVector:
+      properties:
+        id:
+          description: This is the vector's unique id.
+          example: example-vector-1
+          maxLength: 512
+          minLength: 1
+          required:
+          - id
+          type: string
+        metadata:
+          description: This is the metadata, if it is requested.
+          example:
+            genre: documentary
+            year: 2019
+          type: object
+        score:
+          description: This is a measure of similarity between this vector and the
+            query vector.  The higher the score, the more they are similar.
+          example: 0.08
+          format: float
+          type: number
+        sparseValues:
+          $ref: '#/components/schemas/SparseValues'
+        values:
+          description: This is the vector data, if it is requested.
+          example:
+          - 0.1
+          - 0.2
+          - 0.3
+          - 0.4
+          - 0.5
+          - 0.6
+          - 0.7
+          - 0.8
+          items:
+            format: float
+            type: number
+          type: array
+      required:
+      - id
+      type: object
+    SingleQueryResults:
+      properties:
+        matches:
+          description: The matches for the vectors.
+          items:
+            $ref: '#/components/schemas/ScoredVector'
+          type: array
+        namespace:
+          description: The namespace for the vectors.
+          example: example-namespace
+          type: string
+      title: The query results for a single `QueryVector`
+      type: object
+    SparseValues:
+      description: Vector sparse data. Represented as a list of indices and a list
+        of corresponded values, which must be the same length.
+      properties:
+        indices:
+          description: The indices of the sparse data.
+          example:
+          - 1
+          - 312
+          - 822
+          - 14
+          - 980
+          items:
+            format: int64
+            type: integer
+          maxLength: 1000
+          minLength: 1
+          required:
+          - indices
+          type: array
+        values:
+          description: The corresponding values of the sparse data, which must be
+            the same length as the indices.
+          example:
+          - 0.1
+          - 0.2
+          - 0.3
+          - 0.4
+          - 0.5
+          items:
+            format: float
+            type: number
+          maxLength: 1000
+          minLength: 1
+          required:
+          - values
+          type: array
+      required:
+      - indices
+      - values
+      type: object
+    UpdateRequest:
+      description: The request for the `Upsert` operation.
+      properties:
+        id:
+          description: Vector's unique id.
+          example: example-vector-1
+          maxLength: 512
+          minLength: 1
+          required:
+          - id
+          type: string
+        namespace:
+          description: The namespace containing the vector to update.
+          example: example-namespace
+          type: string
+        setMetadata:
+          description: Metadata to *set* for the vector.
+          example:
+            genre: documentary
+            year: 2019
+          type: object
+        sparseValues:
+          $ref: '#/components/schemas/SparseValues'
+        values:
+          description: Vector data.
+          example:
+          - 0.1
+          - 0.2
+          - 0.3
+          - 0.4
+          - 0.5
+          - 0.6
+          - 0.7
+          - 0.8
+          items:
+            format: float
+            type: number
+          maxLength: 20000
+          minLength: 1
+          type: array
+      required:
+      - id
+      type: object
+    UpdateResponse:
+      description: The response for the `Update` operation.
+      type: object
+    UpsertRequest:
+      description: The request for the `Upsert` operation.
+      properties:
+        namespace:
+          description: This is the namespace name where you upsert vectors.
+          example: example-namespace
+          type: string
+        vectors:
+          description: An array containing the vectors to upsert. Recommended batch
+            limit is 100 vectors.
+          items:
+            $ref: '#/components/schemas/Vector'
+          maxLength: 1000
+          minLength: 1
+          required:
+          - vectors
+          type: array
+      required:
+      - vectors
+      type: object
+    UpsertResponse:
+      description: The response for the `Upsert` operation.
+      properties:
+        upsertedCount:
+          description: The number of vectors upserted.
+          example: 10
+          format: int64
+          type: integer
+      type: object
+    Vector:
+      properties:
+        id:
+          description: This is the vector's unique id.
+          example: example-vector-1
+          maxLength: 512
+          minLength: 1
+          required:
+          - id
+          type: string
+        metadata:
+          description: This is the metadata included in the request.
+          example:
+            genre: documentary
+            year: 2019
+          type: object
+        sparseValues:
+          $ref: '#/components/schemas/SparseValues'
+        values:
+          description: This is the vector data included in the request.
+          example:
+          - 0.1
+          - 0.2
+          - 0.3
+          - 0.4
+          - 0.5
+          - 0.6
+          - 0.7
+          - 0.8
+          items:
+            format: float
+            type: number
+          maxLength: 20000
+          minLength: 1
+          required:
+          - values
+          type: array
+      required:
+      - id
+      - values
+      type: object
+    collectionMeta:
+      properties:
+        name:
+          example: example-collection
+          type: string
+        size:
+          description: The size of the collection in bytes.
+          example: 1
+          type: integer
+        status:
+          description: The status of the collection.
+          example: created
+          type: string
+      type: object
+    createCollectionRequest:
+      properties:
+        name:
+          description: The name of the collection to be created.
+          example: example-collection
+          type: string
+        source:
+          description: The name of the source index to be used as the source for the
+            collection.
+          example: example-source-index
+          type: string
+      required:
+      - name
+      - source
+      type: object
+    createRequest:
+      properties:
+        dimension:
+          description: The dimensions of the vectors to be inserted in the index
+          example: 1024
+          type: integer
+        index_config:
+          deprecated: true
+          oneOf:
+          - $ref: '#/components/schemas/ApproximatedConfig'
+        index_type:
+          default: approximated
+          deprecated: true
+          description: The type of vector index. Pinecone supports 'approximated'.
+          type: string
+        metadata_config:
+          description: "Configuration for the behavior of Pinecone's internal metadata\
+            \ index. By default, all metadata is indexed; when `metadata_config` is\
+            \ present, only specified metadata fields are indexed. To specify metadata\
+            \ fields to index, provide a JSON object of the following form: \n  ```\
+            \ \n {\"indexed\": [\"example_metadata_field\"]} \n ``` "
+          nullable: true
+          type: object
+        metric:
+          default: cosine
+          description: The distance metric to be used for similarity search. You can
+            use 'euclidean', 'cosine', or 'dotproduct'.
+          type: string
+        name:
+          description: The name of the index to be created. The maximum length is
+            45 characters.
+          example: example-index
+          type: string
+        pod_type:
+          default: p1.x1
+          description: The type of pod to use. One of `s1`, `p1`, or `p2` appended
+            with `.` and one of `x1`, `x2`, `x4`, or `x8`.
+          type: string
+        pods:
+          default: 1
+          description: The number of pods for the index to use,including replicas.
+          type: integer
+        replicas:
+          default: 1
+          description: The number of replicas. Replicas duplicate your index. They
+            provide higher availability and throughput.
+          type: integer
+        source_collection:
+          description: The name of the collection to create an index from
+          type: string
+      required:
+      - name
+      - dimension
+      type: object
+    indexMeta:
+      properties:
+        database:
+          properties:
+            dimension:
+              type: string
+            index_config:
+              oneOf:
+              - $ref: '#/components/schemas/ApproximatedConfig'
+            index_type:
+              deprecated: true
+              type: string
+            metadata_config:
+              type: object
+            metric:
+              type: string
+            name:
+              type: string
+            pod_type:
+              type: string
+            pods:
+              type: integer
+            replicas:
+              type: integer
+            shards:
+              type: integer
+            status:
+              properties:
+                ready:
+                  type: boolean
+                state:
+                  enum:
+                  - Initializing
+                  - ScalingUp
+                  - ScalingDown
+                  - Terminating
+                  - Ready
+                  type: string
+              type: object
+          type: object
+      type: object
+    patchRequest:
+      properties:
+        pod_type:
+          description: The new pod type for the index. One of `s1`, `p1`, or `p2`
+            appended with `.` and one of `x1`, `x2`, `x4`, or `x8`.
+          example: s1.x2
+          type: string
+        replicas:
+          description: The desired number of replicas for the index.
+          example: 3
+          type: integer
+      type: object
+    protobufAny:
+      properties:
+        typeUrl:
+          type: string
+        value:
+          format: byte
+          type: string
+      type: object
+    protobufNullValue:
+      default: NULL_VALUE
+      description: "`NullValue` is a singleton enumeration to represent the null value\
+        \ for the\n`Value` type union.\n\n The JSON representation for `NullValue`\
+        \ is JSON `null`.\n\n - NULL_VALUE: Null value."
+      enum:
+      - NULL_VALUE
+      type: string
+    rpcStatus:
+      properties:
+        code:
+          format: int32
+          type: integer
+        details:
+          items:
+            $ref: '#/components/schemas/protobufAny'
+          type: array
+        message:
+          type: string
+      type: object
+  securitySchemes:
+    ApiKeyAuth:
+      description: An API Key is required to call Pinecone APIs. Get yours at https://www.pinecone.io/start/
+      in: header
+      name: Api-Key
+      type: apiKey
+externalDocs:
+  description: More Pinecone.io API docs
+  url: https://www.pinecone.io/docs
+info:
+  contact:
+    email: support@pinecone.io
+    name: Pinecone.io Ops
+    url: https://pinecone.io
+  title: Pinecone API
+  version: version not set
+openapi: 3.0.3
+paths:
+  /describe_index_stats:
+    post:
+      description: The `DescribeIndexStats` operation returns statistics about the
+        index's contents, including the vector count per namespace and the number
+        of dimensions.
+      operationId: describe_index_stats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DescribeIndexStatsRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeIndexStatsResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: DescribeIndexStats
+      tags:
+      - Vector Operations
+      x-readme:
+        code-samples:
+        - code: "import pinecone \n\n pinecone.init(api_key='YOUR_API_KEY', environment='us-east1-gcp')\
+            \ \n index = pinecone.Index('example-index') \n\n index_stats_response\
+            \ = index.describe_index_stats()"
+          language: python
+        - code: "const index = client.index('example-index');\n const describeIndexStatsQuery\
+            \ = {\n      filter: {}\n    }\n\nindex.describeIndexStats(describeIndexStatsQuery)"
+          language: node
+  /query:
+    post:
+      description: 'The `Query` operation searches a namespace, using a query vector.
+
+        It retrieves the ids of the most similar items in a namespace, along with
+        their similarity scores.'
+      operationId: query
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Query
+      tags:
+      - Vector Operations
+      x-readme:
+        code-samples:
+        - code: "import pinecone \n\n pinecone.init(api_key='YOUR_API_KEY', environment='us-east1-gcp')\
+            \ \n index = pinecone.Index('example-index') \n\n query_response = index.query(\n\
+            \    namespace='example-namespace',\n    top_k=10,\n    include_values=True,\n\
+            \    include_metadata=True,\n    vector=[0.1, 0.2, 0.3, 0.4],\n    sparseVector={\n\
+            \        'indices': [10, 45, 16],\n        'values':  [0.5, 0.5, 0.2]\n\
+            \    },\n    filter={\n        'genre': {'$in': ['comedy', 'documentary',\
+            \ 'drama']}\n    }\n)"
+          language: python
+        - code: "const client = new pineconeclient(); \n\nawait client.init{( \n \
+            \ apikey: 'YOUR_API_KEY', \n  environment: 'us_east1-gcp', \n}); \n\n\
+            const index = client.index('example-index');\n\nconst queryRequest = {\n\
+            \  topK: 10,\n  vector: [0.1,0.2,0.3],\n  namespace: 'example-namespace'\n\
+            }\n\n//Query the index and store the response.\nconst queryResponse =\
+            \ await index.query(queryRequest);"
+          language: node
+  /vectors/delete:
+    post:
+      description: 'The `Delete` operation deletes vectors, by id, from a single namespace.
+
+        You can delete items by their id, from a single namespace.'
+      operationId: delete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Delete
+      tags:
+      - Vector Operations
+      x-readme:
+        code-samples:
+        - code: "import pinecone \n\n pinecone.init(api_key='YOUR_API_KEY', environment='us-east1-gcp')\
+            \ \n index = pinecone.Index('example-index') \n\n delete_response = index.delete(ids=['vec1',\
+            \ 'vec2'], namespace='example-namespace')"
+          language: python
+        - code: 'const index = client.index(''example-index'');
+
+
+            await index.delete1([''vec1'',''vec2''], ''example-namespace'');'
+          language: node
+  /vectors/fetch:
+    get:
+      description: 'The `Fetch` operation looks up and returns vectors, by ID, from
+        a single namespace.
+
+        The returned vectors include the vector data and/or metadata.'
+      operationId: fetch
+      parameters:
+      - description: The vector IDs to fetch. Does not accept values containing spaces.
+        explode: true
+        in: query
+        name: ids
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+      - in: query
+        name: namespace
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FetchResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Fetch
+      tags:
+      - Vector Operations
+      x-readme:
+        code-samples:
+        - code: "import pinecone \n\n pinecone.init(api_key='YOUR_API_KEY', environment='us-east1-gcp')\
+            \ \n index = pinecone.Index('example-index') \n\n fetch_response = index.fetch(ids=['vec1',\
+            \ 'vec2'], namespace='example-namespace')"
+          language: python
+        - code: "const client = new pineconeclient(); \n\nawait client.init{( \n \
+            \ apikey: 'YOUR_API_KEY', \n  environment: 'us_east1-gcp', \n}); \n\n\
+            const index = client.index('example-index');\n\n//Fetch vectors by ID\
+            \ and save response.\nconst fetchResponse = await index.fetch(['vec1',\
+            \ 'vec2'], 'example-namespace');\n//Get vectors from fetch response.\n\
+            const fetchResponseVectors = fetchResponse.data"
+          language: node
+  /vectors/update:
+    post:
+      description: 'The `Update` operation updates vector in a namespace.
+
+        If a value is included, it will overwrite the previous value.
+
+        If a set_metadata is included, the values of the fields specified in it will
+        be added or overwrite the previous value.'
+      operationId: update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Update
+      tags:
+      - Vector Operations
+      x-readme:
+        code-samples:
+        - code: "import pinecone \n\n pinecone.init(api_key='YOUR_API_KEY', environment='us-east1-gcp')\
+            \ \n index = pinecone.Index('example-index') \n\n update_response = index.update(\n\
+            \    id='vec1',\n    values=[0.1, 0.2, 0.3, 0.4],\n    set_metadata={'genre':\
+            \ 'drama'},\n    namespace='example-namespace'\n)"
+          language: python
+        - code: "const client = new pineconeclient(); \n\nawait client.init{( \n \
+            \ apikey: 'YOUR_API_KEY', \n  environment: 'us_east1-gcp', \n}); \n\n\
+            const index = client.index('example-index');\n\nconst updateRequest =\
+            \ {\n  id:'vec1',\n  values: [0.1,0.2,0.3,0.4],\n  set_metadata={'genre':\
+            \ 'drama'},\n  namespace: 'example-namespace'\n};\n\nawait index.update(updateRequest);"
+          language: node
+  /vectors/upsert:
+    post:
+      description: 'The `Upsert` operation writes vectors into a namespace.
+
+        If a new value is upserted for an existing vector id, it will overwrite the
+        previous value.'
+      operationId: upsert
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpsertResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Upsert
+      tags:
+      - Vector Operations
+      x-readme:
+        code-samples:
+        - code: "import pinecone \n\npinecone.init(api_key='YOUR_API_KEY', environment='us-east1-gcp')\
+            \ \nindex = pinecone.Index('example-index') \n\nupsert_response = index.upsert(\n\
+            \    vectors=[\n        {\n        'id':'vec1', \n        'values':[0.1,\
+            \ 0.2, 0.3, 0.4], \n        'metadata':{'genre': 'drama'},\n         \
+            \  'sparse_values':\n           {'indices': [10, 45, 16],\n          \
+            \ 'values':  [0.5, 0.5, 0.2]}},\n        {'id':'vec2', \n        'values':[0.2,\
+            \ 0.3, 0.4, 0.5], \n        'metadata':{'genre': 'action'},\n        \
+            \   'sparse_values':\n           {'indices': [15, 40, 11],\n         \
+            \  'values':  [0.4, 0.5, 0.2]}}\n    ],\n    namespace='example-namespace'\n\
+            )"
+          language: python
+        - code: "const client = new pineconeclient(); \n\nawait client.init{( \n \
+            \ apikey: 'your_api_key', \n  environment: 'us_east1-gcp', \n}); \n\n\
+            const index = client.index('example-index');\n\nconst vector1 = {\n  id:\
+            \ 'vec1',\n  values: [0.1,0.2,0.3,0.4],\n  metadata: {'genre': 'drama'}\n\
+            \nconst vector2 = {\n  id: 'vec2',\n  values: [0.2,0.3,0.4,0.5],\n  metadata:\
+            \ {'genre': 'action'}\n}\n\nconst upsertrequest = {\n  vectors: [vector1,\
+            \ vector2]\n};\n\nawait index.upsert(upsertrequest);"
+          language: node
+security:
+- ApiKeyAuth: []
+servers:
+- url: '{index_name-project_id.svc.environment.pinecone.io}'
+  variables:
+    index_name-project_id.svc.environment.pinecone.io:
+      default: index_name-project_id.svc.environment.pinecone.io
+      description: URL for the target Pinecone index. See app.pinecone.io > Indexes
+        > Index Name.
+tags:
+- name: Vector Operations
+- name: Index Operations
+x-readme:
+  explorer-enabled: false
+  proxy-enabled: false
+  samples-enabled: true
+  samples-languages:
+  - curl
+  - python
+  - http
+  - node
