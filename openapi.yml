@@ -208,7 +208,7 @@ paths:
 
   /describe_index_stats:
     servers:
-      - url: https://{index_name}-{project_id}.svc.{environment}.pincone.io
+      - url: https://{index_name}-{project_id}.svc.{environment}.pinecone.io
         variables:
           index_name:
             default: example
@@ -249,7 +249,7 @@ paths:
 
   /query:
     servers:
-      - url: https://{index_name}-{project_id}.svc.{environment}.pincone.io
+      - url: https://{index_name}-{project_id}.svc.{environment}.pinecone.io
         variables:
           index_name:
             default: example
@@ -290,7 +290,7 @@ paths:
 
   /vectors/delete:
     servers:
-      - url: https://{index_name}-{project_id}.svc.{environment}.pincone.io
+      - url: https://{index_name}-{project_id}.svc.{environment}.pinecone.io
         variables:
           index_name:
             default: example
@@ -331,7 +331,7 @@ paths:
 
   /vectors/fetch:
     servers:
-      - url: https://{index_name}-{project_id}.svc.{environment}.pincone.io
+      - url: https://{index_name}-{project_id}.svc.{environment}.pinecone.io
         variables:
           index_name:
             default: example
@@ -372,7 +372,7 @@ paths:
 
   /vectors/update:
     servers:
-      - url: https://{index_name}-{project_id}.svc.{environment}.pincone.io
+      - url: https://{index_name}-{project_id}.svc.{environment}.pinecone.io
         variables:
           index_name:
             default: example
@@ -413,7 +413,7 @@ paths:
 
   /vectors/upsert:
     servers:
-      - url: https://{index_name}-{project_id}.svc.{environment}.pincone.io
+      - url: https://{index_name}-{project_id}.svc.{environment}.pinecone.io
         variables:
           index_name:
             default: example
